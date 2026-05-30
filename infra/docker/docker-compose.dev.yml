@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # TimescaleDB for time-series metrics
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: mip-timescaledb
+    environment:
+      - POSTGRES_USER=mip_user
+      - POSTGRES_PASSWORD=mip_password
+      - POSTGRES_DB=mip_metrics
+    ports:
+      - "5433:5432"
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+    networks:
+      - mip-network
+
+  # PostgreSQL for master data
+  postgres:
+    image: postgres:15-alpine
+    container_name: mip-postgres
+    environment:
+      - POSTGRES_USER=mip_user
+      - POSTGRES_PASSWORD=mip_password
+      - POSTGRES_DB=mip_master
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mip-network
+
+  # Redis for caching and pub/sub
+  redis:
+    image: redis:7-alpine
+    container_name: mip-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - mip-network
+
+  # Kafka + Zookeeper (Traditional setup for stability)
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    container_name: mip-zookeeper
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - mip-network
+
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: mip-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+    depends_on:
+      - zookeeper
+    networks:
+      - mip-network
+
+  # MinIO for object storage
+  minio:
+    image: minio/minio:latest
+    container_name: mip-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=mip_admin
+      - MINIO_ROOT_PASSWORD=mip_password
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - mip-network
+
+networks:
+  mip-network:
+    driver: bridge
+
+volumes:
+  timescaledb_data:
+  postgres_data:
+  minio_data:

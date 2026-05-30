@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package mip.shared;
+
+import "google/protobuf/timestamp.proto";
+
+message Alert {
+  string id = 1;
+  string machine_id = 2;
+  string severity = 3; // critical, high, medium, low, info
+  string category = 4; // anomaly, maintenance, quality, sla
+  string title = 5;
+  string description = 6;
+  google.protobuf.Timestamp triggered_at = 7;
+}

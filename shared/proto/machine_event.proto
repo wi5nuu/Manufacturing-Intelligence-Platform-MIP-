@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package mip.shared;
+
+import "google/protobuf/timestamp.proto";
+
+message MachineEvent {
+  google.protobuf.Timestamp time = 1;
+  string machine_id = 2;
+  string event_type = 3; // start, stop, fault, maintenance, changeover
+  string event_code = 4;
+  int32 duration_s = 5;
+  string operator_id = 6;
+  string notes = 7;
+}

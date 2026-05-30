@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package mip.shared;
+
+import "google/protobuf/timestamp.proto";
+
+message SensorReading {
+  google.protobuf.Timestamp time = 1;
+  string machine_id = 2;
+  string parameter = 3;
+  double value = 4;
+  string unit = 5;
+  int32 quality = 6;
+}

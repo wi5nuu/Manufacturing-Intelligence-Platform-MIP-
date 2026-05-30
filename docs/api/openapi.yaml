@@ -1,0 +1,25 @@
+openapi: 3.1.0
+info:
+  title: Manufacturing Intelligence Platform (MIP) API
+  version: 1.0.0
+  description: API for factory real-time monitoring, OEE analytics, and machine management.
+
+paths:
+  /auth/login:
+    post:
+      summary: Authenticate user
+      responses:
+        '200':
+          description: JWT Token returned
+  /api/v1/machines:
+    get:
+      summary: List all machines
+      responses:
+        '200':
+          description: List of machines
+  /api/v1/analytics/oee/summary:
+    get:
+      summary: Get OEE summary metrics
+      responses:
+        '200':
+          description: OEE, Availability, Performance, Quality scores
